@@ -6,7 +6,8 @@ import colors from "../../assets/styles/colors";
 import { width } from "../../utils";
 import Icon, { Icons } from '../common/Icon';
 import {
-    AlarmStackNavigator
+    AlarmStackNavigator,
+    CategoriesStackNavigator
 } from "./StackNavigator";
 
 
@@ -15,6 +16,7 @@ import {
 
 const TabArr = [
     { route: 'Alarm', label: 'Alarm', type: Icons.MaterialCommunityIcons, activeIcon: 'clock', inActiveIcon: 'clock-outline', component: AlarmStackNavigator },
+    { route: 'Categories', label: 'Categories', type: Icons.Ionicons, activeIcon: 'restaurant', inActiveIcon: 'restaurant-outline', component: CategoriesStackNavigator },
 ];
 
 const Tab = createBottomTabNavigator();
