@@ -1,14 +1,15 @@
 import Apploading from "expo-app-loading";
 import React, { useState } from 'react';
-import { ImageBackground, SafeAreaView, StyleSheet, Text } from 'react-native';
+import {ActivityIndicator, ImageBackground, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import style from "../../assets/styles/style";
 import { getFonts } from "../../utils";
+import colors from "../../assets/styles/colors";
 
 
 const Alarm = () => {
-    const [fontsloaded, setFontsLoaded] = useState(false);
+    const [fontsLoaded, setFontsLoaded] = useState(false);
 
-    if (fontsloaded){
+    if (fontsLoaded){
         return (
             <SafeAreaView style={styles.container}>
                 <Text>Alarm</Text>
@@ -22,12 +23,16 @@ const Alarm = () => {
     }  
     else{
         return (
-            <Apploading
-              startAsync={getFonts}
-              onFinish={() => {
-                setFontsLoaded(true);
-              }}
-              onError={console.warn} />
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                <Apploading
+                    startAsync={getFonts}
+                    onFinish={() => {
+                        setFontsLoaded(true);
+                    }}
+                    onError={console.warn}
+                />
+                <ActivityIndicator size="large" color={colors.orange} />
+            </View>
         );
     }
 };

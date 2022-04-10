@@ -22,3 +22,10 @@ export const getFonts = () =>
         MontserratSemiBold: require("./assets/fonts/Montserrat-SemiBold.ttf"),
         MontserratBold: require("./assets/fonts/Montserrat-Bold.ttf"),
 });
+
+export const BASE_URL = "http://2e7b-2001-9e8-e33a-9c01-5c19-76cc-cdba-c281.ngrok.io/api/v1";
+
+export const images = {
+    "menu_item.png": require("./assets/images/menu_item.png"),
+    "menu_details.png": require("./assets/images/menu_details.png")
+}

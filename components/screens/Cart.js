@@ -1,6 +1,6 @@
 import Apploading from "expo-app-loading";
 import React, { useState } from "react";
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import colors from "../../assets/styles/colors";
 import { getFonts, height, width } from "../../utils";
 
@@ -67,13 +67,13 @@ const renderItem = ({item}) => (
 );
 
 const Cart = ({navigation}) => {
-    const [fontsloaded, setFontsLoaded] = useState(false);
+    const [fontsLoaded, setFontsLoaded] = useState(false);
 
     const checkoutHandler = () => {
         navigation.navigate('ShippingAddress');
     }
 
-    if (fontsloaded){
+    if (fontsLoaded){
         return (
             <View style={styles.container}>
                 <View style={styles.cartContainer}>
@@ -117,28 +117,31 @@ const Cart = ({navigation}) => {
     }
     else{
         return (
-            <Apploading
-              startAsync={getFonts}
-              onFinish={() => {
-                setFontsLoaded(true);
-              }}
-              onError={console.warn} />
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                <Apploading
+                    startAsync={getFonts}
+                    onFinish={() => {
+                        setFontsLoaded(true);
+                    }}
+                    onError={console.warn}
+                />
+                <ActivityIndicator size="large" color={colors.orange} />
+            </View>
         );
     }
 };
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1, 
-        justifyContent: 'center', 
+        flex: 1,
+        justifyContent: 'center',
         alignItems: 'center',  
         backgroundColor: '#fdfdfd',
     },
     cartContainer: {
-        width: width, 
-        height: height * 0.8, 
-        alignItems: 'center', 
-        paddingTop: 100,
+        width: width,
+        height: height * 0.8,
+        alignItems: 'center',
     },
     cartItemsContainer: {
         width: width, 
@@ -146,6 +149,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center', 
         alignItems: 'center', 
         paddingBottom: 30, 
+        paddingTop: 50,
         borderBottomLeftRadius: 50,
     },
     quantityContainer: {

@@ -1,29 +1,82 @@
 import Apploading from "expo-app-loading";
-import React, { useState } from 'react';
-import { Image, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import RadioForm from 'react-native-simple-radio-button';
+import React, {useContext, useEffect, useState} from 'react';
+import {
+    ActivityIndicator,
+    Image,
+    ImageBackground,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native';
+import Checkbox from 'expo-checkbox';
 import Icon from 'react-native-vector-icons/Ionicons';
 import colors from '../../assets/styles/colors';
 import style from '../../assets/styles/style';
-import { getFonts, height, width } from '../../utils';
+import {BASE_URL, getFonts, height, images, width} from '../../utils';
+import {CartItemsContext} from "../../context";
 
 
-const radio_props = [
-    { label: "Fresh", value: 0 },
-    { label: "Cooked", value: 1 },
-];
 
 const MenuDetails  = ({ navigation, route }) => {
-    const [fontsloaded, setFontsLoaded] = useState(false);
+    const [fontsLoaded, setFontsLoaded] = useState(false);
+    const [contentLoaded, setContentLoaded] = useState(false);
+    const [cartItems, setCartItems] = useContext(CartItemsContext);
+    const [menu, setMenu] = useState({});
+    const [fresh, setFresh] = useState(true);
+    const [cooked, setCooked] = useState(false);
+    const [menuType, setMenuType] = useState("FRESH");
+    const [quantity, setQuantity] = useState(1);
 
-    if (fontsloaded){
+
+    const fetchMenu = (menuId) => (
+        useEffect(() => {
+        fetch(BASE_URL + "/menus/" + menuId)
+            .then((response) => response.json())
+            .then((json) => setMenu(json))
+            .catch((error) => console.log(error))
+            .finally(() => setContentLoaded(true))
+        }, [])
+    );
+
+    const renderFresh = () => {
+        setFresh(true);
+        setCooked(false);
+        setMenuType("FRESH");
+    };
+
+    const renderCooked = () => {
+        setCooked(true);
+        setFresh(false);
+        setMenuType("COOKED");
+    };
+
+    const decreaseQuantity = () => {
+        if(quantity>1){
+            setQuantity(quantity-1);
+        }
+    };
+
+    const increaseQuantity = () => {
+        setQuantity(quantity+1)
+    };
+
+    const addMenu = () => {
+        setQuantity(quantity+1)
+    };
+
+
+    fetchMenu(route.params.menu.id);
+
+    if (fontsLoaded && contentLoaded){
         return (
             <View>
                 <ScrollView contentContainerStyle={{alignItems: 'center'}}>
                     <View style={styles.imageContainer}>
                         <Image
                             style={styles.menuImage}
-                            source={require('../../assets/images/menu_details.png')}         
+                            source={images[menu.image + "_details.png"]}
                             resizeMode="cover"
                         />
                     </View>       
@@ -35,30 +88,44 @@ const MenuDetails  = ({ navigation, route }) => {
                     </View>
 
                     <View style={styles.titleContainer}>
-                        <Text style={styles.price} adjustsFontSizeToFit>27€</Text>
-                        <Text style={styles.menu} adjustsFontSizeToFit>Menu</Text>
+                        <Text style={styles.price} adjustsFontSizeToFit>{menu.price}€</Text>
+                        <Text style={styles.menu} adjustsFontSizeToFit>{menu.name}</Text>
                     </View>
                     
                     <View style={styles.descriptionContainer}>
-                        <Text style={styles.description} adjustsFontSizeToFit>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</Text>
+                        <Text style={styles.description} adjustsFontSizeToFit>{menu.full_description}</Text>
                     </View>
                     
                     <View style={styles.addToCartContainer}>
-                        <View>
-                            <RadioForm 
-                                radio_props={radio_props}
-                                initial={0}
-                                labelStyle={styles.radioButtonLabel}
-                                buttonColor={colors.black}
-                                buttonSize={10}
-                                selectedButtonColor={colors.black}
-                                onPress={(value) => {this.setState({value:value})}}
-                            />
+                        <View style={{flexDirection: 'column'}}>
+                            <View style={{flexDirection: 'row', justifyContent: 'flex-start', paddingBottom: 10}}>
+                                <Checkbox
+                                    value={fresh}
+                                    onValueChange={renderFresh}
+                                    color={fresh ? colors.orange : undefined}
+                                />
+
+                                <View style={{alignItems: 'center', justifyContent: 'center', paddingLeft: 5}}>
+                                    <Text style={{fontFamily: 'MontserratMedium', fontSize: 14, }}>Fresh</Text>
+                                </View>
+                            </View>
+
+                            <View style={{flexDirection: 'row', justifyContent: 'flex-start', }}>
+                                <Checkbox
+                                    value={cooked}
+                                    onValueChange={renderCooked}
+                                    color={cooked ? colors.orange : undefined}
+                                />
+
+                                <View style={{alignItems: 'center', justifyContent: 'center', paddingLeft: 5}}>
+                                    <Text style={{fontFamily: 'MontserratMedium', fontSize: 14, }}>Cooked</Text>
+                                </View>
+                            </View>
                         </View>
+
                         <View style={{flexDirection: 'row'}}>
-                            
                             <View style={styles.quantityContainer}>
-                                <TouchableOpacity>
+                                <TouchableOpacity onPress={() => decreaseQuantity()}>
                                     <View style={styles.quantityBtn}>
                                         <Text style={styles.quantityText}>-</Text>
                                     </View>
@@ -66,11 +133,11 @@ const MenuDetails  = ({ navigation, route }) => {
 
                                 <TouchableOpacity>
                                     <View style={{ height: 30, width: 20, alignItems: 'center', justifyContent: 'center'}}>
-                                        <Text style={styles.quantityText}>1</Text>
+                                        <Text style={styles.quantityText}>{quantity}</Text>
                                     </View>
                                 </TouchableOpacity>
 
-                                <TouchableOpacity>
+                                <TouchableOpacity onPress={() => increaseQuantity()}>
                                     <View style={styles.quantityBtn}>
                                         <Text style={styles.quantityText}>+</Text>
                                     </View>
@@ -78,7 +145,7 @@ const MenuDetails  = ({ navigation, route }) => {
                             </View>
 
                             <View style={{paddingLeft: 20}}>
-                                <TouchableOpacity>
+                                <TouchableOpacity onPress={() => addMenu(item)}>
                                     <View style={styles.addBtn}>
                                         <Text style={styles.addText}>Add</Text>
                                     </View>
@@ -97,12 +164,16 @@ const MenuDetails  = ({ navigation, route }) => {
     }
     else{
         return (
-            <Apploading
-              startAsync={getFonts}
-              onFinish={() => {
-                setFontsLoaded(true);
-              }}
-              onError={console.warn} />
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                <Apploading
+                    startAsync={getFonts}
+                    onFinish={() => {
+                        setFontsLoaded(true);
+                    }}
+                    onError={console.warn}
+                />
+                <ActivityIndicator size="large" color={colors.orange} />
+            </View>
         );
     }   
 };

@@ -1,42 +1,66 @@
 import Apploading from "expo-app-loading";
-import React, { useState } from 'react';
-import { FlatList, Image, ImageBackground, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import menu from '../../assets/data/menu';
+import React, {useEffect, useState} from 'react';
+import {
+    ActivityIndicator,
+    FlatList,
+    Image,
+    ImageBackground,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
+} from 'react-native';
 import colors from '../../assets/styles/colors';
 import style from '../../assets/styles/style';
-import { getFonts, height, normalizeFontSize, width } from '../../utils';
-
+import {getFonts, height, width, normalizeFontSize, BASE_URL, images} from '../../utils';
 
 
 const Menu = ({ navigation, route }) => {
-    const renderItem = ({item}) => (
-        <TouchableOpacity onPress={() => pressHandler(item)}>
-            <View>
-                <View style={[styles.menuItem, styles.upperBox]}>
-                    <Image source={item.image} style={styles.itemImage} />
-                    <View style={styles.itemInfo}>        
-                        <Text style={styles.itemTitle}>{item.title}</Text>
-                        <Text style={styles.itemDescription}>{item.description}</Text>
+    const [fontsLoaded, setFontsLoaded] = useState(false);
+    const [contentLoaded, setContentLoaded] = useState(false);
+    const [data, setData] = useState([]);
+
+    const fetchMenus = (categoryId) => (
+        useEffect(() => {
+        fetch(BASE_URL + "/search/menus?category_id=" + categoryId)
+            .then((response) => response.json())
+            .then((json) => setData(json))
+            .catch((error) => console.log(error))
+            .finally(() => setContentLoaded(true))
+        }, [])
+    );
+
+    const renderItem = ({item}) => {
+        return (
+            <TouchableOpacity onPress={() => pressHandler(item)}>
+                <View>
+                    <View style={[styles.menuItem, styles.upperBox]}>
+                        <Image source={images[item.image + "_item.png"]}  style={styles.itemImage} />
+                        <View style={styles.itemInfo}>
+                            <Text style={styles.itemTitle}>{item.title}</Text>
+                            <Text style={styles.itemDescription}>{item.short_description}</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.lowerBox}>
+                        <Text style={styles.itemPrice}>{item.price}€</Text>
+                        <Text style={styles.itemInformation}>Information</Text>
                     </View>
                 </View>
-    
-                <View style={styles.lowerBox}>
-                    <Text style={styles.itemPrice}>{item.price}€</Text>
-                    <Text style={styles.itemInformation}>Information</Text>         
-                </View>
-            </View>
-        </TouchableOpacity>
-    );
+            </TouchableOpacity>
+        )
+    };
     
     const keyExtractor = (item) => item.title;
     
     const pressHandler = (item) => {
-        navigation.navigate('MenuDetails', {'Menu': item});
+        navigation.navigate('MenuDetails', {'menu': item});
     }
 
-    const [fontsloaded, setFontsLoaded] = useState(false);
+    fetchMenus(route.params.category.id);
 
-    if (fontsloaded) {
+    if (fontsLoaded && contentLoaded) {
         return (
             <SafeAreaView style={style.container}>
                 <View style={styles.headerWrapper}>
@@ -45,7 +69,7 @@ const Menu = ({ navigation, route }) => {
 
                 <View style={style.wrapper}>
                     <FlatList 
-                        data={menu} 
+                        data={data}
                         renderItem={renderItem} 
                         keyExtractor={keyExtractor} 
                     />       
@@ -53,19 +77,23 @@ const Menu = ({ navigation, route }) => {
     
                 <ImageBackground
                     style={style.imageBackground}
-                    source={require('../../assets/images/menu_background.png')}         
+                    source={require("../../assets/images/menu_background.png")}
                     resizeMode="stretch" />
             </SafeAreaView>
         );
     }
     else {
         return (
-            <Apploading
-              startAsync={getFonts}
-              onFinish={() => {
-                setFontsLoaded(true);
-              }}
-              onError={console.warn} />
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                <Apploading
+                    startAsync={getFonts}
+                    onFinish={() => {
+                        setFontsLoaded(true);
+                    }}
+                    onError={console.warn}
+                />
+                <ActivityIndicator size="large" color={colors.orange} />
+            </View>
         );
     }
     
@@ -114,7 +142,7 @@ const styles = StyleSheet.create({
     itemDescription: {
         fontFamily: 'MontserratMedium',
         fontSize: normalizeFontSize(14),
-        color: colors.gray,    
+        color: colors.black,
         paddingLeft: 10,
         paddingTop: 5,
     },
@@ -138,7 +166,7 @@ const styles = StyleSheet.create({
     itemPrice: { 
         fontFamily: 'MontserratSemiBold',
         fontSize: normalizeFontSize(18),
-        color: colors.navyBlue,
+        color: colors.black,
         marginTop: 5,
     },
     itemInformation: {

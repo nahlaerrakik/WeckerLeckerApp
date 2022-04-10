@@ -5,18 +5,15 @@ import * as Animatable from 'react-native-animatable';
 import colors from "../../assets/styles/colors";
 import { width } from "../../utils";
 import Icon, { Icons } from '../common/Icon';
-import {
-    AlarmStackNavigator,
-    CategoriesStackNavigator
-} from "./StackNavigator";
-
-
-
+import AlarmStackNavigator from "./AlarmStackNavigator";
+import CategoriesStackNavigator from "./CategoriesStackNavigator";
+import CartStackNavigator from "./CartStackNavigator";
 
 
 const TabArr = [
-    { route: 'Alarm', label: 'Alarm', type: Icons.MaterialCommunityIcons, activeIcon: 'clock', inActiveIcon: 'clock-outline', component: AlarmStackNavigator },
-    { route: 'Categories', label: 'Categories', type: Icons.Ionicons, activeIcon: 'restaurant', inActiveIcon: 'restaurant-outline', component: CategoriesStackNavigator },
+    { route: 'AlarmTab', label: 'AlarmTab', type: Icons.MaterialCommunityIcons, activeIcon: 'clock', inactiveIcon: 'clock-outline', component: AlarmStackNavigator },
+    { route: 'CategoriesTab', label: 'CategoriesTab', type: Icons.Ionicons, activeIcon: 'restaurant', inactiveIcon: 'restaurant-outline', component: CategoriesStackNavigator },
+    { route: 'CartTab', label: 'CartTab', type: Icons.Ionicons, activeIcon: 'cart', inactiveIcon: 'cart-outline', component: CartStackNavigator},
 ];
 
 const Tab = createBottomTabNavigator();
@@ -28,9 +25,9 @@ const TabButton = (props) => {
 
     useEffect(() => {
         if (focused) {
-            viewRef.current.animate({0: {scale: .5, rotate: '0deg'}, 1: {scale: 1.5, rotate: '360deg'}});
+            viewRef.current.animate({0: {scale: .5, rotate: '0deg'}, 1: {scale: 1.2, rotate: '360deg'}});
         } else {
-            viewRef.current.animate({0: {scale: 1.5, rotate: '360deg'}, 1: {scale: 1, rotate: '0deg'}});
+            viewRef.current.animate({0: {scale: .5, rotate: '360deg'}, 1: {scale: 1.2, rotate: '0deg'}});
         }
     }, [focused])
 
@@ -45,10 +42,12 @@ const TabButton = (props) => {
                 ref={viewRef}
                 duration={1000}
             >
-                <Icon 
+                <Icon
                     type={item.type} 
-                    name={focused ? item.activeIcon : item.inActiveIcon} 
-                    color={colors.orange} 
+                    name={focused ? item.activeIcon : item.inactiveIcon}
+                    color={colors.orange}
+                    route={item.route}
+                    props={props}
                 />
             </Animatable.View>
         </TouchableOpacity>
@@ -60,16 +59,16 @@ const BottomTabNavigator = () => {
     return (
         <Tab.Navigator
             name="Main"
-            screenOptions={{ 
-                headerShown: false, 
+            screenOptions={{
+                headerShown: false,
                 tabBarStyle: styles.tabBar,
             }}
         >
             {TabArr.map((item, index) => {
                 return (
-                    <Tab.Screen 
+                    <Tab.Screen
                         key={index}
-                        name={item.route} 
+                        name={item.route}
                         component={item.component}
                         options={{
                             tabBarShowLabel: false,

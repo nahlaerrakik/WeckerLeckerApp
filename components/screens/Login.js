@@ -1,30 +1,32 @@
 import Apploading from "expo-app-loading";
-import React, { useState } from "react";
-import { ImageBackground, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import React, { useState, useContext } from "react";
+import { ImageBackground, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Platform } from "react-native";
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import colors from "../../assets/styles/colors";
 import style from "../../assets/styles/style";
 import { getFonts, width } from "../../utils";
+import {UserContext} from "../../context";
 
 
 
 const Login = ({ navigation, route }) => {
-    const [fontsloaded, setFontsLoaded] = useState(false);
+    const [fontsLoaded, setFontsLoaded] = useState(false);
+	const [isLoggedIn, setIsLoggedIn] = useContext(UserContext);
     const [password, setPassword] = useState('');
     const [passwordVisibility, setPasswordVisibility] = useState(true);
-    const [showHideBtn, setshowHideBtn] = useState('Show');
+    const [showHideBtn, setShowHideBtn] = useState('Show');
 
-    const [isEmailValid, setIsEmailValid] = useState('');
-    const [isPasswordValid, setIsPasswordValid] = useState('');
+    const [isEmailValid, setIsEmailValid] = useState(null);
+    const [isPasswordValid, setIsPasswordValid] = useState(null);
   
     const handlePasswordVisibility = () => {
         if (showHideBtn === 'Show') {
-            setshowHideBtn('Hide');
+            setShowHideBtn('Hide');
             setPasswordVisibility(!passwordVisibility);
         } 
         else if (showHideBtn === 'Hide') {
-            setshowHideBtn('Show');
+            setShowHideBtn('Show');
             setPasswordVisibility(!passwordVisibility);
         }
     };
@@ -34,30 +36,30 @@ const Login = ({ navigation, route }) => {
     }
 
     const signUpHandler = () => {
-        navigation.navigate('SignUp', {'handleLogInFinish': route.params.handleLogInFinish });
+        navigation.navigate('SignUp');
     }
 
     const loginHandler = () => {
         if (isEmailValid && isPasswordValid){
-            route.params.handleLogInFinish();
+            setIsLoggedIn(true);
             navigation.navigate('Main');
         }
     }
 
     const facebookLoginHandler = () => {
-        route.params.handleLogInFinish();
-        navigation.navigate('Main')
+        setIsLoggedIn(true);
+        navigation.navigate('Main');
     }
 
     const gmailLoginHandler = () => {
-        route.params.handleLogInFinish();
+        setIsLoggedIn(true);
         navigation.navigate('Main')
     }
 
     const validateEmail= (text) => {
-        const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+        const regex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w\w+)+$/;
 
-        var is_valid = regex.test(text); 
+        let is_valid = regex.test(text);
         if (is_valid === true) {
             setIsEmailValid(true);
         } 
@@ -67,7 +69,7 @@ const Login = ({ navigation, route }) => {
     }
 
     const validatePassword = (text) => {
-        var is_valid = text.length >= 8; 
+        let is_valid = text.length >= 8;
 
         if (is_valid === true) {
             setIsPasswordValid(true);
@@ -79,7 +81,7 @@ const Login = ({ navigation, route }) => {
         setPassword(text);
     }
 
-    if (fontsloaded) {
+    if (fontsLoaded) {
         return (
             <KeyboardAvoidingView 
                 style={{flex: 1}} 
@@ -162,7 +164,9 @@ const Login = ({ navigation, route }) => {
                         </TouchableOpacity>
                     </View>
 
-                    <View style={{marginTop: 30}}></View>
+                    <View style={{marginTop: 30}}>
+
+                    </View>
 
                     <View style={styles.forgetPasswordContainer}>
                         <Text style={styles.forgotPassword}>Or login with</Text>

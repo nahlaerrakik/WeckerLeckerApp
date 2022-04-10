@@ -1,89 +1,86 @@
 import Apploading from "expo-app-loading";
-import React, { useState } from "react";
-import { Image, ImageBackground, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import React, {useContext, useState} from "react";
+import { Image, ImageBackground, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Platform } from "react-native";
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import colors from "../../assets/styles/colors";
 import style from "../../assets/styles/style";
 import { getFonts, width } from "../../utils";
+import {UserContext} from "../../context";
 
 
 
 const SignUp = ({ navigation, route }) => {
-    const [fontsloaded, setFontsLoaded] = useState(false);
+    const [fontsLoaded, setFontsLoaded] = useState(false);
+	const [isLoggedIn, setIsLoggedIn] = useContext(UserContext);
+
+    const [firstName, setFirstName] = useState(null);
+    const [lastName, setLastName] = useState(null);
+    const [email, setEmail] = useState(null);
 
     const [password, setPassword] = useState('');
     const [passwordVisibility, setPasswordVisibility] = useState(true);
-    const [showHideBtn, setshowHideBtn] = useState('Show');
+    const [showHideBtn, setShowHideBtn] = useState('Show');
     
     const [passwordAgain, setPasswordAgain] = useState('');
     const [passwordAgainVisibility, setPasswordAgainVisibility] = useState(true);
-    const [showHideAgainBtn, setshowHideAgainBtn] = useState('Show');
+    const [showHideAgainBtn, setShowHideAgainBtn] = useState('Show');
 
-    const [isNameValid, setIsNameValid] = useState('');
-    const [isEmailValid, setIsEmailValid] = useState('');
-    const [isPasswordValid, setIsPasswordValid] = useState('');
-    const [isPasswordAgainValid, setIsPasswordAgainValid] = useState('');
-    
+    const [isEmailValid, setIsEmailValid] = useState(null);
+    const [isPasswordValid, setIsPasswordValid] = useState(null);
+    const [isPasswordAgainValid, setIsPasswordAgainValid] = useState(null);
+
+
     const handlePasswordVisibility = () => {
         if (showHideBtn === 'Show') {
-            setshowHideBtn('Hide');
+            setShowHideBtn('Hide');
             setPasswordVisibility(!passwordVisibility);
         } 
         else if (showHideBtn === 'Hide') {
-            setshowHideBtn('Show');
+            setShowHideBtn('Show');
             setPasswordVisibility(!passwordVisibility);
         }
     };
 
     const handlePasswordAgainVisibility = () => {
         if (showHideAgainBtn === 'Show') {
-            setshowHideAgainBtn('Hide');
+            setShowHideAgainBtn('Hide');
             setPasswordAgainVisibility(!passwordAgainVisibility);
         } 
       else if (showHideAgainBtn === 'Hide') {
-            setshowHideAgainBtn('Show');
+            setShowHideAgainBtn('Show');
             setPasswordAgainVisibility(!passwordAgainVisibility);
         }
     };
 
     const signInHandler = () => {
-        navigation.navigate('Login', {'handleLogInFinish': route.params.handleLogInFinish });
+        navigation.navigate('Login');
     }
 
     const signUpHandler = () => {
-        if (isEmailValid && isPasswordValid && isPasswordAgainValid && isNameValid){
-            route.params.handleLogInFinish();
-            navigation.navigate('Main')
+        if (isEmailValid && isPasswordValid && isPasswordAgainValid){
+            setIsLoggedIn(true);
+            navigation.navigate('Main');
         }
     }
 
-    const validateName = (text) => {
-        const regex = /^[a-zA-Z]{2,40}( [a-zA-Z]{2,40})+$/;
-
-        var is_valid = regex.test(text); 
-        if (is_valid === true) {
-            setIsNameValid(true);
-        } 
-        else {
-            setIsNameValid('');
-        }
-    }
 
     const validateEmail= (text) => {
-        const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+        const regex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w\w+)+$/;
 
-        var is_valid = regex.test(text); 
+        let is_valid = regex.test(text);
         if (is_valid === true) {
             setIsEmailValid(true);
         } 
         else {
             setIsEmailValid(false);
         }
+
+        setEmail(text);
     }
 
     const validatePassword = (text) => {
-        var is_valid = text.length >= 8; 
+        let is_valid = text.length >= 8;
 
         if (is_valid === true) {
             setIsPasswordValid(true);
@@ -96,7 +93,7 @@ const SignUp = ({ navigation, route }) => {
     }
 
     const validatePasswordAgain = (text) => {
-        var is_valid = text == password; 
+        let is_valid = text === password;
 
         if (is_valid === true) {
             setIsPasswordAgainValid(true);
@@ -108,7 +105,7 @@ const SignUp = ({ navigation, route }) => {
         setPasswordAgain(text);
     }
 
-    if (fontsloaded) {
+    if (fontsLoaded) {
         return (
             <KeyboardAvoidingView 
                 style={{flex: 1}} 
@@ -129,12 +126,22 @@ const SignUp = ({ navigation, route }) => {
 
                     <View style={styles.formContainer}>
                         <View style={styles.inputContainer}>
-                            <TextInput placeholder="Name" style={styles.input} onChangeText={validateName} />
+                            <TextInput placeholder="First Name" style={styles.input} onChangeText={text => setFirstName(text)} />
                             <Ionicon 
                                 name="person"
                                 size={25}
                                 style={[styles.inputIcon, {marginTop: 10,}]}
                                 color={colors.black} 
+                            />
+                        </View>
+
+                        <View style={styles.inputContainer}>
+                            <TextInput placeholder="Last Name" style={styles.input} onChangeText={text => setLastName(text)} />
+                            <Ionicon
+                                name="person"
+                                size={25}
+                                style={[styles.inputIcon, {marginTop: 10,}]}
+                                color={colors.black}
                             />
                         </View>
 
@@ -225,9 +232,9 @@ const SignUp = ({ navigation, route }) => {
                     <View style={styles.signUpBtnContainer}>
                         <TouchableOpacity 
                             onPress={() => signUpHandler()}
-                            activeOpacity={isEmailValid && isPasswordValid && isPasswordAgainValid && isNameValid ? 0.7 : 1}
+                            activeOpacity={isEmailValid && isPasswordValid && isPasswordAgainValid ? 0.7 : 1}
                         >
-                            <View style={isEmailValid && isPasswordValid && isPasswordAgainValid && isNameValid ? styles.signUpBtn : styles.signUpBtnDisabled}>
+                            <View style={isEmailValid && isPasswordValid && isPasswordAgainValid ? styles.signUpBtn : styles.signUpBtnDisabled}>
                                 <Text style={styles.signUpBtnText}>Sign Up</Text>
                             </View>
                         </TouchableOpacity>

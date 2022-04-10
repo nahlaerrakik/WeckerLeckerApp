@@ -1,9 +1,11 @@
 import Apploading from "expo-app-loading";
-import React, { useState } from 'react';
-import { Dimensions, Image, StatusBar, StyleSheet, Text, View } from 'react-native';
+import React, {useState, useContext} from 'react';
+import {ActivityIndicator, Dimensions, Image, StatusBar, StyleSheet, Text, View} from 'react-native';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import onboard from '../../assets/data/onboard';
 import { getFonts } from "../../utils";
+import {OnboardContext} from "../../context";
+import colors from "../../assets/styles/colors";
 
 
 
@@ -12,8 +14,9 @@ const {
     height,
 } = Dimensions.get('window');
 
-const Onboard = (props) => {
-	const [fontsloaded, setFontsLoaded] = useState(false);
+const Onboard = () => {
+	const [fontsLoaded, setFontsLoaded] = useState(false);
+	const [showOnboard, setShowOnboard] = useContext(OnboardContext);
 
 	const renderItem = ({item}) => {
 		return (
@@ -53,10 +56,10 @@ const Onboard = (props) => {
 	};
 
 	const handleDone = () => {
-		props.handleOboardFinish();
+		setShowOnboard(false);
 	};
 	
-	if (fontsloaded) {
+	if (fontsLoaded) {
 		return (
 			<View style={{flex: 1}}>
 				<StatusBar translucent backgroundColor="transparent" />
@@ -76,13 +79,16 @@ const Onboard = (props) => {
 	}
 	else {
 		return (
-            <Apploading
-				startAsync={getFonts}
-				onFinish={() => {
-					setFontsLoaded(true);
-				}}
-              	onError={console.warn} 
-			/>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                <Apploading
+                    startAsync={getFonts}
+                    onFinish={() => {
+                        setFontsLoaded(true);
+                    }}
+                    onError={console.warn}
+                />
+                <ActivityIndicator size="large" color={colors.orange} />
+            </View>
         );
 	}
 }

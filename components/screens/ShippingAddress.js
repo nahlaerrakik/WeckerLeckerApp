@@ -1,6 +1,17 @@
 import Apploading from "expo-app-loading";
 import React, { useState } from "react";
-import { ImageBackground, KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+    ImageBackground,
+    KeyboardAvoidingView,
+    Platform,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from "react-native";
 import { Transition, Transitioning } from 'react-native-reanimated';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -134,7 +145,9 @@ const RenderAddress = ({navigation}) => {
                                     </View>
                                 </View>
 
-                                <View style={styles.seprator}></View>
+                                <View style={styles.seprator}>
+
+                                </View>
                             </TouchableOpacity>
                         );
                     })}

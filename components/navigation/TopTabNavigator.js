@@ -28,7 +28,7 @@ const TopTabNavigator = ({navigation, backScreen, isFirstScreen=false, backgroun
     }
     else{
         return (
-            <SafeAreaView style={[styles.container, {backgroundColor: backgroundColor}]}>
+            <SafeAreaView style={{backgroundColor: backgroundColor, height: 0}}>
             </SafeAreaView>
         );
     }
