@@ -1,6 +1,7 @@
 import Apploading from "expo-app-loading";
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
+    ActivityIndicator,
     ImageBackground,
     KeyboardAvoidingView,
     Platform,
@@ -169,13 +170,20 @@ const RenderAddress = ({navigation}) => {
 };
 
 const ShippingAddress = ({navigation}) => {
-    const [fontsloaded, setFontsLoaded] = useState(false);
+    const [fontsLoaded, setFontsLoaded] = useState(false);
+
+    useEffect(() => {
+		async function fetchFonts() {
+		  await getFonts();
+		}
+		fetchFonts().then(r => setFontsLoaded(true));
+  	}, []);
 
     const continueHandler = () => {
         navigation.navigate('BillingAddress');
     }
 
-    if (fontsloaded){
+    if (fontsLoaded){
         return (
             <SafeAreaView style={styles.container}>
                <View style={{width: width * 0.85, flexDirection: 'row', marginTop: 20, }}>
@@ -202,12 +210,9 @@ const ShippingAddress = ({navigation}) => {
     }
     else{
         return (
-            <Apploading
-              startAsync={getFonts}
-              onFinish={() => {
-                setFontsLoaded(true);
-              }}
-              onError={console.warn} />
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                <ActivityIndicator size="large" color={colors.orange} />
+            </View>
         );
     }
 };

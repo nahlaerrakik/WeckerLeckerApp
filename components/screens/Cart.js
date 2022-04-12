@@ -1,5 +1,5 @@
 import Apploading from "expo-app-loading";
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import colors from "../../assets/styles/colors";
 import { getFonts, height, width } from "../../utils";
@@ -69,6 +69,13 @@ const renderItem = ({item}) => (
 const Cart = ({navigation}) => {
     const [fontsLoaded, setFontsLoaded] = useState(false);
 
+    useEffect(() => {
+		async function fetchFonts() {
+		  await getFonts();
+		}
+		fetchFonts().then(r => setFontsLoaded(true));
+  	}, []);
+
     const checkoutHandler = () => {
         navigation.navigate('ShippingAddress');
     }
@@ -118,13 +125,6 @@ const Cart = ({navigation}) => {
     else{
         return (
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                <Apploading
-                    startAsync={getFonts}
-                    onFinish={() => {
-                        setFontsLoaded(true);
-                    }}
-                    onError={console.warn}
-                />
                 <ActivityIndicator size="large" color={colors.orange} />
             </View>
         );

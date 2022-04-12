@@ -1,5 +1,5 @@
 import Apploading from "expo-app-loading";
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {ActivityIndicator, Dimensions, Image, StatusBar, StyleSheet, Text, View} from 'react-native';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import onboard from '../../assets/data/onboard';
@@ -17,6 +17,13 @@ const {
 const Onboard = () => {
 	const [fontsLoaded, setFontsLoaded] = useState(false);
 	const [showOnboard, setShowOnboard] = useContext(OnboardContext);
+
+	useEffect(() => {
+		async function fetchFonts() {
+		  await getFonts();
+		}
+		fetchFonts().then(r => setFontsLoaded(true));
+  	}, []);
 
 	const renderItem = ({item}) => {
 		return (
@@ -47,7 +54,7 @@ const Onboard = () => {
 
 	const renderNextButton = () => {
 		return (
-			<View style={{alignItems: 'center', justifyContent: 'center'}}>      
+			<View style={{alignItems: 'center', justifyContent: 'center'}}>
 				<View style={styles.buttonTextWrapper}>
 					<Text style={styles.buttonText}>Next</Text>
 				</View>
@@ -80,13 +87,6 @@ const Onboard = () => {
 	else {
 		return (
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                <Apploading
-                    startAsync={getFonts}
-                    onFinish={() => {
-                        setFontsLoaded(true);
-                    }}
-                    onError={console.warn}
-                />
                 <ActivityIndicator size="large" color={colors.orange} />
             </View>
         );

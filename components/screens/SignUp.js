@@ -1,6 +1,18 @@
 import Apploading from "expo-app-loading";
-import React, {useContext, useState} from "react";
-import { Image, ImageBackground, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Platform } from "react-native";
+import React, {useContext, useEffect, useState} from "react";
+import {
+    Image,
+    ImageBackground,
+    KeyboardAvoidingView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+    Platform,
+    ActivityIndicator
+} from "react-native";
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import colors from "../../assets/styles/colors";
@@ -29,6 +41,13 @@ const SignUp = ({ navigation, route }) => {
     const [isEmailValid, setIsEmailValid] = useState(null);
     const [isPasswordValid, setIsPasswordValid] = useState(null);
     const [isPasswordAgainValid, setIsPasswordAgainValid] = useState(null);
+
+    useEffect(() => {
+		async function fetchFonts() {
+		  await getFonts();
+		}
+		fetchFonts().then(r => setFontsLoaded(true));
+  	}, []);
 
 
     const handlePasswordVisibility = () => {
@@ -251,11 +270,9 @@ const SignUp = ({ navigation, route }) => {
     }
     else {
         return (
-            <Apploading
-                startAsync={getFonts}
-                onFinish={() => { setFontsLoaded(true);}}
-                onError={console.warn}
-            />
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                <ActivityIndicator size="large" color={colors.orange} />
+            </View>
         );
     }
 }

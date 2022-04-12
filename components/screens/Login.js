@@ -1,6 +1,17 @@
 import Apploading from "expo-app-loading";
-import React, { useState, useContext } from "react";
-import { ImageBackground, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Platform } from "react-native";
+import React, {useState, useContext, useEffect} from "react";
+import {
+    ImageBackground,
+    KeyboardAvoidingView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+    Platform,
+    ActivityIndicator
+} from "react-native";
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import colors from "../../assets/styles/colors";
@@ -19,6 +30,14 @@ const Login = ({ navigation, route }) => {
 
     const [isEmailValid, setIsEmailValid] = useState(null);
     const [isPasswordValid, setIsPasswordValid] = useState(null);
+
+
+    useEffect(() => {
+		async function fetchFonts() {
+		  await getFonts();
+		}
+		fetchFonts().then(r => setFontsLoaded(true));
+  	}, []);
   
     const handlePasswordVisibility = () => {
         if (showHideBtn === 'Show') {
@@ -205,11 +224,9 @@ const Login = ({ navigation, route }) => {
     }
     else {
         return (
-            <Apploading
-                startAsync={getFonts}
-                onFinish={() => { setFontsLoaded(true);}}
-                onError={console.warn}
-            />
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                <ActivityIndicator size="large" color={colors.orange} />
+            </View>
         );
     }
 }

@@ -1,14 +1,22 @@
 import Apploading from "expo-app-loading";
-import React, { useState } from "react";
-import { SafeAreaView, StyleSheet, Text } from "react-native";
+import React, {useEffect, useState} from "react";
+import {ActivityIndicator, SafeAreaView, StyleSheet, Text, View} from "react-native";
 import { getFonts } from "../../utils";
+import colors from "../../assets/styles/colors";
 
 
 
 const ResetPassword = ({ navigation }) => {
-    const [fontsloaded, setFontsLoaded] = useState(false);
+    const [fontsLoaded, setFontsLoaded] = useState(false);
 
-    if (fontsloaded) {
+    useEffect(() => {
+		async function fetchFonts() {
+		  await getFonts();
+		}
+		fetchFonts().then(r => setFontsLoaded(true));
+  	}, []);
+
+    if (fontsLoaded) {
         return (
             <SafeAreaView style={styles.container}>
                 <Text>ResetPassword</Text>
@@ -17,11 +25,9 @@ const ResetPassword = ({ navigation }) => {
     }
     else {
         return (
-            <Apploading
-                startAsync={getFonts}
-                onFinish={() => { setFontsLoaded(true);}}
-                onError={console.warn}
-            />
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                <ActivityIndicator size="large" color={colors.orange} />
+            </View>
         );
     }
 }

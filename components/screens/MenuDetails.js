@@ -29,6 +29,13 @@ const MenuDetails  = ({ navigation, route }) => {
     const [menuType, setMenuType] = useState("FRESH");
     const [quantity, setQuantity] = useState(1);
 
+    useEffect(() => {
+		async function fetchFonts() {
+		  await getFonts();
+		}
+		fetchFonts().then(r => setFontsLoaded(true));
+  	}, []);
+
 
     const fetchMenu = (menuId) => (
         useEffect(() => {
@@ -165,13 +172,6 @@ const MenuDetails  = ({ navigation, route }) => {
     else{
         return (
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                <Apploading
-                    startAsync={getFonts}
-                    onFinish={() => {
-                        setFontsLoaded(true);
-                    }}
-                    onError={console.warn}
-                />
                 <ActivityIndicator size="large" color={colors.orange} />
             </View>
         );

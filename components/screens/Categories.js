@@ -11,6 +11,13 @@ const Categories = ({navigation}) => {
     const [contentLoaded, setContentLoaded] = useState(false);
     const [data, setData] = useState([]);
 
+    useEffect(() => {
+		async function fetchFonts() {
+		  await getFonts();
+		}
+		fetchFonts().then(r => setFontsLoaded(true));
+  	}, []);
+
     const fetchCategories = () => (
         useEffect(() => {
         fetch(BASE_URL + "/categories?skip=0&limit=100")
@@ -63,13 +70,6 @@ const Categories = ({navigation}) => {
     } else {
         return (
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                <Apploading
-                    startAsync={getFonts}
-                    onFinish={() => {
-                        setFontsLoaded(true);
-                    }}
-                    onError={console.warn}
-                />
                 <ActivityIndicator size="large" color={colors.orange} />
             </View>
         );
