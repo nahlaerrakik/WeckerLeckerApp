@@ -14,7 +14,7 @@ import Checkbox from 'expo-checkbox';
 import Icon from 'react-native-vector-icons/Ionicons';
 import colors from '../../assets/styles/colors';
 import style from '../../assets/styles/style';
-import {BASE_URL, getFonts, height, images, width} from '../../utils';
+import {BASE_URL, getFonts, height, IMAGES, width} from '../../utils';
 import {CartItemsContext} from "../../context";
 
 
@@ -83,7 +83,7 @@ const MenuDetails  = ({ navigation, route }) => {
                     <View style={styles.imageContainer}>
                         <Image
                             style={styles.menuImage}
-                            source={images[menu.image + "_details.png"]}
+                            source={IMAGES[menu.image + "_details.png"]}
                             resizeMode="cover"
                         />
                     </View>       

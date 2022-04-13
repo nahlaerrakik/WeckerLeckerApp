@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import colors from '../../assets/styles/colors';
 import style from '../../assets/styles/style';
-import {getFonts, height, width, normalizeFontSize, BASE_URL, images} from '../../utils';
+import {getFonts, height, width, normalizeFontSize, BASE_URL, IMAGES} from '../../utils';
 
 
 const Menu = ({ navigation, route }) => {
@@ -43,7 +43,7 @@ const Menu = ({ navigation, route }) => {
             <TouchableOpacity onPress={() => pressHandler(item)}>
                 <View>
                     <View style={[styles.menuItem, styles.upperBox]}>
-                        <Image source={images[item.image + "_item.png"]}  style={styles.itemImage} />
+                        <Image source={IMAGES[item.image + "_item.png"]} style={styles.itemImage} />
                         <View style={styles.itemInfo}>
                             <Text style={styles.itemTitle}>{item.title}</Text>
                             <Text style={styles.itemDescription}>{item.short_description}</Text>

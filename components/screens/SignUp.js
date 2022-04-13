@@ -1,4 +1,3 @@
-import Apploading from "expo-app-loading";
 import React, {useContext, useEffect, useState} from "react";
 import {
     Image,
@@ -17,8 +16,10 @@ import Ionicon from 'react-native-vector-icons/Ionicons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import colors from "../../assets/styles/colors";
 import style from "../../assets/styles/style";
-import { getFonts, width } from "../../utils";
+import {BASE_URL, getFonts, width} from "../../utils";
 import {UserContext} from "../../context";
+import {login, register} from "../../logic/authentication";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 
@@ -41,6 +42,8 @@ const SignUp = ({ navigation, route }) => {
     const [isEmailValid, setIsEmailValid] = useState(null);
     const [isPasswordValid, setIsPasswordValid] = useState(null);
     const [isPasswordAgainValid, setIsPasswordAgainValid] = useState(null);
+
+    const [errorMsg, setErrorMsg] = useState(null);
 
     useEffect(() => {
 		async function fetchFonts() {
@@ -78,8 +81,29 @@ const SignUp = ({ navigation, route }) => {
 
     const signUpHandler = () => {
         if (isEmailValid && isPasswordValid && isPasswordAgainValid){
-            setIsLoggedIn(true);
-            navigation.navigate('Main');
+            let result = register(email, firstName, lastName, password);
+            AsyncStorage.getItem(result)
+                .then((response) => JSON.parse(response))
+                .then((data) => {
+                    if (data.status === 'FAILURE'){
+                        setErrorMsg(data.detail);
+                    }
+                    else{
+                        let result = login(email, password);
+                        AsyncStorage.getItem(result)
+                            .then((response) => JSON.parse(response))
+                            .then((data) => {
+                                if (data.status === 'FAILURE'){
+                                    setErrorMsg(data.detail);
+                                }
+                                else{
+                                    navigation.navigate('Main');
+                                }
+                            }
+                        ).done();
+                    }
+                }
+            ).done();
         }
     }
 
@@ -144,6 +168,14 @@ const SignUp = ({ navigation, route }) => {
                     </View>
 
                     <View style={styles.formContainer}>
+                        {
+                            errorMsg !== null ?
+                                <View style={{padding: 10, borderWidth: 1, borderColor: colors.orange, borderRadius: 15}}>
+                                <Text style={{color: 'red', fontFamily: 'MontserratRegular'}}>{errorMsg}</Text>
+                            </View>
+                            :
+                                null
+                        }
                         <View style={styles.inputContainer}>
                             <TextInput placeholder="First Name" style={styles.input} onChangeText={text => setFirstName(text)} />
                             <Ionicon 
@@ -370,6 +402,9 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: colors.white,
     },
+    erroMsgBox:{
+
+    }
 });
 
 export default SignUp;

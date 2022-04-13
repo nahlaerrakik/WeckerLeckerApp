@@ -1,5 +1,6 @@
 import * as Font from "expo-font";
 import { Dimensions, PixelRatio } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const {
     width,
@@ -25,7 +26,22 @@ export const getFonts = () =>
 
 export const BASE_URL = "http://2e7b-2001-9e8-e33a-9c01-5c19-76cc-cdba-c281.ngrok.io/api/v1";
 
-export const images = {
+export const IMAGES = {
     "menu_item.png": require("./assets/images/menu_item.png"),
     "menu_details.png": require("./assets/images/menu_details.png")
+}
+
+export function handleAPIError(error, item){
+    let error_msg = 'An error has occurred. Please try again later.'
+
+    if (error.response){
+         error_msg = error.response.data.detail;
+    }
+
+    AsyncStorage.setItem(
+        item, JSON.stringify({
+            'status': 'FAILURE',
+            'detail': error_msg,
+        })
+    )
 }
