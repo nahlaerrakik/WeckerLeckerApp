@@ -1,4 +1,3 @@
-import Apploading from "expo-app-loading";
 import React, {useState, useContext, useEffect} from "react";
 import {
     ImageBackground,
@@ -20,6 +19,7 @@ import { getFonts, width } from "../../utils";
 import {UserContext} from "../../context";
 import {login} from "../../logic/authentication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import LoadingIndicator from "../common/LoadingIndicator";
 
 
 
@@ -35,6 +35,8 @@ const Login = ({ navigation, route }) => {
     const [isPasswordValid, setIsPasswordValid] = useState(null);
 
     const [errorMsg, setErrorMsg] = useState(null);
+
+    const [isLoading, setIsLoading] = useState(false);
 
 
     useEffect(() => {
@@ -65,6 +67,8 @@ const Login = ({ navigation, route }) => {
 
     const loginHandler = () => {
         if (isEmailValid && isPasswordValid){
+            setIsLoading(true);
+
             let result = login(email, password);
             AsyncStorage.getItem(result)
                 .then((response) => JSON.parse(response))
@@ -74,10 +78,13 @@ const Login = ({ navigation, route }) => {
                     }
                     else{
                         setIsLoggedIn(true);
+                        setIsLoading(false);
                         navigation.navigate('Main');
                     }
                 }).done();
         }
+
+        setIsLoading(false);
     }
 
     const facebookLoginHandler = () => {
@@ -233,6 +240,8 @@ const Login = ({ navigation, route }) => {
                             </View>
                         </TouchableOpacity>
                     </View>
+
+                    {isLoading && <LoadingIndicator />}
 
                     <ImageBackground
                         style={style.imageBackground}

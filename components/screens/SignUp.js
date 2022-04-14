@@ -103,6 +103,7 @@ const SignUp = ({ navigation, route }) => {
                                     setErrorMsg(data.detail);
                                 }
                                 else{
+                                    setIsLoggedIn(true);
                                     navigation.navigate('Main');
                                 }
                             }

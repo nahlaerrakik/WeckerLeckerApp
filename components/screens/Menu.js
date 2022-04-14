@@ -1,4 +1,3 @@
-import Apploading from "expo-app-loading";
 import React, {useEffect, useState} from 'react';
 import {
     ActivityIndicator,
