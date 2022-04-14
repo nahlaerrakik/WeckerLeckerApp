@@ -30,15 +30,27 @@ export function register(email, firstName, lastName, password){
 
 
 export function login(email, password){
+    let details = {
+        'username': email,
+        'password': password,
+    };
+
+    let data = [];
+    for (let property in details) {
+        let encodedKey = encodeURIComponent(property);
+        let encodedValue = encodeURIComponent(details[property]);
+        data.push(encodedKey + "=" + encodedValue);
+    }
+    data = data.join("&");
+
     const options = {
-        url: BASE_URL + '/users/login',
+        url: BASE_URL + '/login',
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
         },
-        data: {
-            'email': email, 'password': password
-        }
+        data: data
     };
 
     axios(options)
@@ -46,7 +58,14 @@ export function login(email, password){
             AsyncStorage.setItem(
                 'loginResult', JSON.stringify({
                     'status': 'SUCCESS',
-                    'detail': response.access_token,
+                    'detail': response.data.access_token,
+                })
+            )
+
+            AsyncStorage.setItem(
+                'userInfo', JSON.stringify({
+                    'email': email,
+                    'token': response.data.access_token,
                 })
             )
         })

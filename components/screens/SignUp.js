@@ -20,6 +20,8 @@ import {BASE_URL, getFonts, width} from "../../utils";
 import {UserContext} from "../../context";
 import {login, register} from "../../logic/authentication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Spinner from 'react-native-loading-spinner-overlay';
+import LoadingIndicator from "../common/LoadingIndicator";
 
 
 
@@ -44,6 +46,8 @@ const SignUp = ({ navigation, route }) => {
     const [isPasswordAgainValid, setIsPasswordAgainValid] = useState(null);
 
     const [errorMsg, setErrorMsg] = useState(null);
+
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
 		async function fetchFonts() {
@@ -81,6 +85,8 @@ const SignUp = ({ navigation, route }) => {
 
     const signUpHandler = () => {
         if (isEmailValid && isPasswordValid && isPasswordAgainValid){
+            setIsLoading(true);
+
             let result = register(email, firstName, lastName, password);
             AsyncStorage.getItem(result)
                 .then((response) => JSON.parse(response))
@@ -105,6 +111,7 @@ const SignUp = ({ navigation, route }) => {
                 }
             ).done();
         }
+        setIsLoading(false);
     }
 
 
@@ -155,7 +162,7 @@ const SignUp = ({ navigation, route }) => {
                 behavior={Platform.OS ==='ios' ? 'padding': ''}
                 keyboardVerticalOffset={Platform.select({ios: 0, android: 500})}
             >
-                <ScrollView 
+                <ScrollView
                     contentContainerStyle={styles.container} 
                     bounces={false} 
                 >
@@ -281,7 +288,7 @@ const SignUp = ({ navigation, route }) => {
                     </View>
 
                     <View style={styles.signUpBtnContainer}>
-                        <TouchableOpacity 
+                        <TouchableOpacity
                             onPress={() => signUpHandler()}
                             activeOpacity={isEmailValid && isPasswordValid && isPasswordAgainValid ? 0.7 : 1}
                         >
@@ -297,6 +304,8 @@ const SignUp = ({ navigation, route }) => {
                         resizeMode="stretch"
                     />
                 </ScrollView>
+
+                {isLoading && <LoadingIndicator />}
             </KeyboardAvoidingView>
         );
     }

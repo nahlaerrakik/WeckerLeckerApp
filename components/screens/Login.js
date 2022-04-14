@@ -18,18 +18,23 @@ import colors from "../../assets/styles/colors";
 import style from "../../assets/styles/style";
 import { getFonts, width } from "../../utils";
 import {UserContext} from "../../context";
+import {login} from "../../logic/authentication";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 
 const Login = ({ navigation, route }) => {
     const [fontsLoaded, setFontsLoaded] = useState(false);
 	const [isLoggedIn, setIsLoggedIn] = useContext(UserContext);
+    const [email, setEmail] = useState(null);
     const [password, setPassword] = useState('');
     const [passwordVisibility, setPasswordVisibility] = useState(true);
     const [showHideBtn, setShowHideBtn] = useState('Show');
 
     const [isEmailValid, setIsEmailValid] = useState(null);
     const [isPasswordValid, setIsPasswordValid] = useState(null);
+
+    const [errorMsg, setErrorMsg] = useState(null);
 
 
     useEffect(() => {
@@ -60,19 +65,25 @@ const Login = ({ navigation, route }) => {
 
     const loginHandler = () => {
         if (isEmailValid && isPasswordValid){
-            setIsLoggedIn(true);
-            navigation.navigate('Main');
+            let result = login(email, password);
+            AsyncStorage.getItem(result)
+                .then((response) => JSON.parse(response))
+                .then((data) => {
+                    if(data.status === 'FAILURE'){
+                        setErrorMsg(data.detail);
+                    }
+                    else{
+                        setIsLoggedIn(true);
+                        navigation.navigate('Main');
+                    }
+                }).done();
         }
     }
 
     const facebookLoginHandler = () => {
-        setIsLoggedIn(true);
-        navigation.navigate('Main');
     }
 
     const gmailLoginHandler = () => {
-        setIsLoggedIn(true);
-        navigation.navigate('Main')
     }
 
     const validateEmail= (text) => {
@@ -85,6 +96,8 @@ const Login = ({ navigation, route }) => {
         else {
             setIsEmailValid(false);
         }
+
+        setEmail(text);
     }
 
     const validatePassword = (text) => {
@@ -119,8 +132,16 @@ const Login = ({ navigation, route }) => {
                     </View>
 
                     <View style={styles.formContainer}>
+                        {
+                            errorMsg !== null ?
+                                <View style={{padding: 10,marginTop: 10, borderWidth: 1, borderColor: colors.orange, borderRadius: 15}}>
+                                <Text style={{color: 'red', fontFamily: 'MontserratRegular'}}>{errorMsg}</Text>
+                            </View>
+                            :
+                                null
+                        }
                         <View style={styles.inputContainer}>
-                            <TextInput placeholder="Email" style={styles.input} onChangeText={validateEmail} />
+                            <TextInput placeholder="Email" value={email} style={styles.input} onChangeText={validateEmail} />
                             <MaterialIcon
                                 name="email"
                                 size={25}

@@ -46,7 +46,7 @@ const AuthenticationStackNavigator = (props) => {
             <Stack.Screen
                 name="Main"
                 component={BottomTabNavigator}
-                options={{gestureEnabled: false, headerShown: false}}
+                options={{headerShown: false}}
             />
         </Stack.Navigator>
     );

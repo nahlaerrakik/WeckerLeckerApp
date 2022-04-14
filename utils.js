@@ -31,11 +31,16 @@ export const IMAGES = {
     "menu_details.png": require("./assets/images/menu_details.png")
 }
 
+export const ERRORS = [
+    "An account is already registered with this email address.",
+    "Incorrect email or password.",
+]
+
 export function handleAPIError(error, item){
     let error_msg = 'An error has occurred. Please try again later.'
 
-    if (error.response){
-         error_msg = error.response.data.detail;
+    if (error.response && ERRORS.includes(error.response.data.detail)){
+        error_msg = error.response.data.detail;
     }
 
     AsyncStorage.setItem(
