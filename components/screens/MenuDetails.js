@@ -53,17 +53,7 @@ const MenuDetails  = ({ navigation, route }) => {
                 }
             }).done();
     }, []);
-
-
-    const fetchMenu = (menuId) => (
-        useEffect(() => {
-        fetch(BASE_URL + "/menus/" + menuId)
-            .then((response) => response.json())
-            .then((json) => setMenu(json))
-            .catch((error) => console.log(error))
-            .finally(() => setContentLoaded(true))
-        }, [])
-    );
+    
 
     const renderFresh = () => {
         setFresh(true);
