@@ -4,12 +4,14 @@ import {FlatList, ImageBackground, SafeAreaView, StyleSheet, Text, TouchableOpac
 import colors from '../../assets/styles/colors';
 import style from '../../assets/styles/style';
 import {getFonts, width, BASE_URL} from '../../utils';
+import {getCategories} from "../../logic/categories";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const Categories = ({navigation}) => {
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const [contentLoaded, setContentLoaded] = useState(false);
-    const [data, setData] = useState([]);
+    const [list, setList] = useState([]);
 
     useEffect(() => {
 		async function fetchFonts() {
@@ -18,15 +20,20 @@ const Categories = ({navigation}) => {
 		fetchFonts().then(r => setFontsLoaded(true));
   	}, []);
 
-    const fetchCategories = () => (
-        useEffect(() => {
-        fetch(BASE_URL + "/categories?skip=0&limit=100")
-            .then((response) => response.json())
-            .then((json) => setData(json))
-            .catch((error) => console.log(error))
-            .finally(() => setContentLoaded(true))
-        }, [])
-    );
+    useEffect(() => {
+        let result = getCategories();
+        AsyncStorage.getItem(result)
+            .then((response) => JSON.parse(response))
+            .then((data) => {
+                if(data.status === 'FAILURE'){
+                    alert(data.detail);
+                }
+                else{
+                    setList(data.detail);
+                    setContentLoaded(true);
+                }
+            }).done();
+    }, [])
 
     const renderItem = ({item}) => (
         <TouchableOpacity onPress={() => pressHandler(item)}>
@@ -40,8 +47,6 @@ const Categories = ({navigation}) => {
         navigation.navigate('Menu', {'category': item});
     }
 
-    fetchCategories();
-
     if (fontsLoaded && contentLoaded) {
         return (
             <SafeAreaView style={{justifyContent: 'center', alignItems: 'center', backgroundColor: '#ffffff'}}>
@@ -49,7 +54,7 @@ const Categories = ({navigation}) => {
                     <Text style={styles.header}>Categories</Text>
                 </View>
 
-                <FlatList data={data} renderItem={renderItem} keyExtractor={item => item.id} />
+                <FlatList data={list} renderItem={renderItem} keyExtractor={item => item.id} />
 
                 <View style={{width: width, justifyContent: 'center', alignItems: 'center', marginTop: 30}}>
                     <TouchableOpacity>

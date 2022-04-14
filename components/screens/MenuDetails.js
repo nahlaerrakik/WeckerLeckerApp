@@ -16,6 +16,8 @@ import colors from '../../assets/styles/colors';
 import style from '../../assets/styles/style';
 import {BASE_URL, getFonts, height, IMAGES, width} from '../../utils';
 import {CartItemsContext} from "../../context";
+import {getMenu, searchMenusByCategories} from "../../logic/menu";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 
@@ -35,6 +37,22 @@ const MenuDetails  = ({ navigation, route }) => {
 		}
 		fetchFonts().then(r => setFontsLoaded(true));
   	}, []);
+
+
+    useEffect(() => {
+        let result = getMenu(route.params.menu.id);
+        AsyncStorage.getItem(result)
+            .then((response) => JSON.parse(response))
+            .then((data) => {
+                if(data.status === 'FAILURE'){
+                    alert(data.detail);
+                }
+                else{
+                    setMenu(data.detail);
+                    setContentLoaded(true);
+                }
+            }).done();
+    }, []);
 
 
     const fetchMenu = (menuId) => (
@@ -72,9 +90,6 @@ const MenuDetails  = ({ navigation, route }) => {
     const addMenu = () => {
         setQuantity(quantity+1)
     };
-
-
-    fetchMenu(route.params.menu.id);
 
     if (fontsLoaded && contentLoaded){
         return (

@@ -13,12 +13,14 @@ import {
 import colors from '../../assets/styles/colors';
 import style from '../../assets/styles/style';
 import {getFonts, height, width, normalizeFontSize, BASE_URL, IMAGES} from '../../utils';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {searchMenusByCategories} from "../../logic/menu";
 
 
 const Menu = ({ navigation, route }) => {
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const [contentLoaded, setContentLoaded] = useState(false);
-    const [data, setData] = useState([]);
+    const [list, setList] = useState([]);
 
     useEffect(() => {
 		async function fetchFonts() {
@@ -27,15 +29,21 @@ const Menu = ({ navigation, route }) => {
 		fetchFonts().then(r => setFontsLoaded(true));
   	}, []);
 
-    const fetchMenus = (categoryId) => (
-        useEffect(() => {
-        fetch(BASE_URL + "/search/menus?category_id=" + categoryId)
-            .then((response) => response.json())
-            .then((json) => setData(json))
-            .catch((error) => console.log(error))
-            .finally(() => setContentLoaded(true))
-        }, [])
-    );
+
+    useEffect(() => {
+        let result = searchMenusByCategories(route.params.category.id);
+        AsyncStorage.getItem(result)
+            .then((response) => JSON.parse(response))
+            .then((data) => {
+                if(data.status === 'FAILURE'){
+                    alert(data.detail);
+                }
+                else{
+                    setList(data.detail);
+                    setContentLoaded(true);
+                }
+            }).done();
+    }, [])
 
     const renderItem = ({item}) => {
         return (
@@ -64,8 +72,6 @@ const Menu = ({ navigation, route }) => {
         navigation.navigate('MenuDetails', {'menu': item});
     }
 
-    fetchMenus(route.params.category.id);
-
     if (fontsLoaded && contentLoaded) {
         return (
             <SafeAreaView style={style.container}>
@@ -75,7 +81,7 @@ const Menu = ({ navigation, route }) => {
 
                 <View style={style.wrapper}>
                     <FlatList 
-                        data={data}
+                        data={list}
                         renderItem={renderItem} 
                         keyExtractor={keyExtractor} 
                     />       
